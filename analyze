@@ -38,18 +38,29 @@ def extend(df):
 def subject(df, s):
     return df[(df.subjects == s)]
 
+grid_vars = ['bongard problems', 'pctime', 'pcorrect', 'sdev']
+
 def plot_grid(df):
     # Compare too many things using phaeaco's sparse data
     pal = dict(human="#41dff4", phaeaco="#f4aa42")
 
-    g = sns.pairplot(df, hue='subjects', palette=pal, vars=['bongard problems', 'pctime', 'pcorrect', 'sdev'], 
+    g = sns.pairplot(df, hue='subjects', palette=pal, vars=grid_vars, 
                                                       kind='reg', diag_kind='kde')
     for i, ax in enumerate(g.axes.flat): # set every-other axis for testing purposes
         if i < 4:
             ax.set_ylim(0, 200)
         elif i < 12:
             ax.set_ylim(0, 1)
-    plt.show()
+
+def plot_subject_grids(df):
+    for subject in ['human', 'phaeaco']:
+        g = sns.pairplot(df, vars=grid_vars, kind='reg', diag_kind='kde')
+        for i, ax in enumerate(g.axes.flat): # set every-other axis for testing purposes
+            if i < 4:
+                ax.set_ylim(0, 200)
+            elif i < 12:
+                ax.set_ylim(0, 1)
+        g.fig.suptitle(subject)
 
 def plot_pcorrect(df):
     # Compare pcorrect in a bar graph
@@ -61,20 +72,17 @@ def plot_kde(df):
     #sns.jointplot(x='pcorrect', y='pctime', data=df, kind='reg', xlim=(0,1), ylim=(0,1))
     #g.set(ylim=(0, 1), xlim=(0, 1))
 
-
-
 def plot_all(df):
     #plt.style.use("dark_background")
     df = extend(df)
     print(df)
 
     #plot_pcorrect(df)
-    plot_grid(df)
+    #plot_grid(df)
     #plot_kde(df)
+    plot_subject_grids(df)
 
     plt.show()
-
-
 
 def main(args):
     data = read(includeNone=False)

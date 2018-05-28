@@ -1,7 +1,15 @@
 # Phaeaco performance analysis
 
-These scripts analyze data from the Phaeaco dissertation:
+These scripts analyze data from the Phaeaco dissertation. They show, for example, correlations between percentage of time take to solve each problem and the percentage of correct answers per subject group.
 
-Here is an example plot (many of the linear fits can be ignored if they are very wide):
+Human data:
+
+![plot](human.png)
+
+Phaeaco data:
+
+![plot](phaeaco.png)
+
+Both (Wide linear fits can be ignored):
 
 ![plot](wonky.png)
