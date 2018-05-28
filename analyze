@@ -37,7 +37,8 @@ def plot(df):
     #col = "subjects"
     #g = sns.lmplot(x="bongard problems", y="pctime", col=col, hue="subjects", data=df,
     #           palette=pal, y_jitter=.02, logistic=True)
-    sns.pairplot(df, hue='subjects', palette=pal, vars=['bongard problems', 'pctime'])
+    sns.pairplot(df, hue='subjects', palette=pal, x_vars=['bongard problems'], 
+                                                  y_vars=['pctime', 'pitime', 'pntime'], kind='reg')
 
     plt.show()
 
