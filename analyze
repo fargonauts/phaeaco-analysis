@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+import sys
+import numpy as np
+import pandas  as ps
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from read import read
+
+from collections import OrderedDict
+from pprint import pprint
+from copy import deepcopy
+
+def subject_indices(d, subject):
+    for i, s in enumerate(d['subjects'].values()):
+        if s == subject:
+            yield i
+
+def extend(df):
+    d = df.to_dict()
+    for t in ['ctime', 'itime', 'ntime']:
+        ptimes = dict()
+        for subject in ['human', 'phaeaco']:
+            m = max(d['ctime'][i] for i in subject_indices(d, subject))
+            for i in subject_indices(d, subject):
+                ptimes[i] = d['ctime'][i] / m
+        d['p' + t] = ptimes
+    return ps.DataFrame(d)
+
+def plot(df):
+    df = extend(df)
+    print(df.to_string())
+
+    pal = dict(human="#41dff4", phaeaco="#f4aa42")
+
+    #col = "subjects"
+    #g = sns.lmplot(x="bongard problems", y="pctime", col=col, hue="subjects", data=df,
+    #           palette=pal, y_jitter=.02, logistic=True)
+    sns.pairplot(df, hue='subjects', palette=pal, vars=['bongard problems', 'pctime'])
+
+    plt.show()
+
+
+def main(args):
+    data = read(includeNone=False)
+    plot(data)
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
