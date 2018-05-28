@@ -6,7 +6,7 @@ import pandas as ps
 from pprint import pprint
 from collections import OrderedDict
 
-bad_val = None
+bad_val = 0
 
 def convert(v):
     v = v.strip()
@@ -59,9 +59,9 @@ def read(includeNone=False):
             if not skipped:
                 statistics[k].append(v)
 
-    print(len(bps))
-    print(len(subjects))
-    print([(k, len(subl)) for k, subl in statistics.items()])
+    #print(len(bps))
+    #print(len(subjects))
+    #print([(k, len(subl)) for k, subl in statistics.items()])
 
     return ps.DataFrame(dict(**{'bongard problems' : bps,
                                 'subjects'         : subjects}, **statistics))

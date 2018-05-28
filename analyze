@@ -17,35 +17,68 @@ def subject_indices(d, subject):
         if s == subject:
             yield i
 
+def add_percent_stat(d, k):
+    pdict = dict()
+    for subject in ['human', 'phaeaco']:
+        m = max(d[k][i] for i in subject_indices(d, subject))
+        for i in subject_indices(d, subject):
+            pdict[i] = d[k][i] / max(m, 1)
+    d['p' + k] = pdict
+
 def extend(df):
     d = df.to_dict()
     for t in ['ctime', 'itime', 'ntime']:
-        ptimes = dict()
-        for subject in ['human', 'phaeaco']:
-            m = max(d['ctime'][i] for i in subject_indices(d, subject))
-            for i in subject_indices(d, subject):
-                ptimes[i] = d['ctime'][i] / m
-        d['p' + t] = ptimes
+        add_percent_stat(d, t)
+
+    for a in ['correct', 'incorrect', 'no answer']:
+        add_percent_stat(d, a)
+
     return ps.DataFrame(d)
 
-def plot(df):
-    df = extend(df)
-    print(df.to_string())
+def subject(df, s):
+    return df[(df.subjects == s)]
 
+def plot_grid(df):
+    # Compare too many things using phaeaco's sparse data
     pal = dict(human="#41dff4", phaeaco="#f4aa42")
 
-    #col = "subjects"
-    #g = sns.lmplot(x="bongard problems", y="pctime", col=col, hue="subjects", data=df,
-    #           palette=pal, y_jitter=.02, logistic=True)
-    sns.pairplot(df, hue='subjects', palette=pal, x_vars=['bongard problems'], 
-                                                  y_vars=['pctime', 'pitime', 'pntime'], kind='reg')
+    g = sns.pairplot(df, hue='subjects', palette=pal, vars=['bongard problems', 'pctime', 'pcorrect', 'sdev'], 
+                                                      kind='reg', diag_kind='kde')
+    for i, ax in enumerate(g.axes.flat): # set every-other axis for testing purposes
+        if i < 4:
+            ax.set_ylim(0, 200)
+        elif i < 12:
+            ax.set_ylim(0, 1)
+    plt.show()
+
+def plot_pcorrect(df):
+    # Compare pcorrect in a bar graph
+    sns.barplot(x='bongard problems', y='pcorrect', hue='subjects', data=df)
+
+def plot_kde(df):
+    # Show shorter problems take less time
+    sns.jointplot(x='pcorrect', y='pctime', data=df, kind='kde', xlim=(0,1), ylim=(0,1))
+    #sns.jointplot(x='pcorrect', y='pctime', data=df, kind='reg', xlim=(0,1), ylim=(0,1))
+    #g.set(ylim=(0, 1), xlim=(0, 1))
+
+
+
+def plot_all(df):
+    #plt.style.use("dark_background")
+    df = extend(df)
+    print(df)
+
+    #plot_pcorrect(df)
+    plot_grid(df)
+    #plot_kde(df)
 
     plt.show()
 
 
+
 def main(args):
     data = read(includeNone=False)
-    plot(data)
+    plot_all(data)
     return 0
 
 if __name__ == '__main__':
